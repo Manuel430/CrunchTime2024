@@ -13,8 +13,13 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
 #include "Targeting/TargetingBoxComponent.h"
 #include "Widgets/StatusGuage.h"
+
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 // Sets default values
 ACCharacterBase::ACCharacterBase()
@@ -40,6 +45,9 @@ ACCharacterBase::ACCharacterBase()
 
 	TargetingBoxComponent = CreateDefaultSubobject<UTargetingBoxComponent>("Targeting Box Component");
 	TargetingBoxComponent->SetupAttachment(GetMesh());
+
+	AIPerceptionSourceComp = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>("AI Perception Source Component");
+	AIPerceptionSourceComp->RegisterForSense(UAISense_Sight::StaticClass());
 }
 
 void ACCharacterBase::SetupAbilitySystemComponent()
@@ -69,6 +77,24 @@ void ACCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ACCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (NewController && !NewController->IsPlayerController())
+	{
+		SetupAbilitySystemComponent();
+		InitAttributes();
+		InitAbilities();
+	}
+
+	if (HasAuthority() && Controller && Controller->IsPlayerController())
+	{
+		APlayerController* OwningPlayerController = Cast<APlayerController>(Controller);
+		//TODO: Figure out the ID
+		TeamId = FGenericTeamId(1);
+	}
 }
 
 // Called to bind functionality to input
@@ -155,6 +181,8 @@ void ACCharacterBase::StartDeath()
 	PlayMontage(DeathMontage);
 	AbilitySystemComponent->ApplyGameplayEffect(DeathEffect);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AIPerceptionSourceComp->UnregisterFromPerceptionSystem();
 }
 
 void ACCharacterBase::DeathTagChanged(const FGameplayTag TagChanged, int32 NewStackCount)
@@ -164,6 +192,14 @@ void ACCharacterBase::DeathTagChanged(const FGameplayTag TagChanged, int32 NewSt
 		StopAnimMontage(DeathMontage);
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		AbilitySystemComponent->ApplyFullStat();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AIPerceptionSourceComp->RegisterWithPerceptionSystem();
 	}
+}
+
+void ACCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION(ACCharacterBase, TeamId, COND_None);
 }
 

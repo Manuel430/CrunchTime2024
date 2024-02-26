@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayEffectTypes.h"
 #include "GameplayAbilities/CGameplayCueInterface.h"
+#include "GenericTeamAgentInterface.h"
 
 #include "CCharacterBase.generated.h"
 
@@ -16,7 +17,7 @@ class UCAttributeSet;
 class UGameplayEffect;
 
 UCLASS()
-class ACCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICGameplayCueInterface
+class ACCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICGameplayCueInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +27,7 @@ public:
 	void SetupAbilitySystemComponent();
 	void InitAttributes();
 	void InitAbilities();
+	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId;  }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,6 +35,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//Server only, when possess by controller
+	virtual void PossessedBy(AController* NewController) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -43,7 +48,7 @@ private:
 	void PlayMontage(UAnimMontage* MontageToPlay);
 
 	/*************************************************************/
-	/*                              Gameplay Ability                                  */
+	/*                    Gameplay Ability                       */
 	/*************************************************************/
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -65,7 +70,7 @@ private:
 	void MaxHealthUpdated(const FOnAttributeChangeData& ChangeData);
 
 	/*************************************************************/
-	/*                              Gameplay Cue                                   */
+	/*                        Gameplay Cue                       */
 	/*************************************************************/
 public:
 	virtual void PlayHitReaction() override;
@@ -74,7 +79,7 @@ private:
 	UAnimMontage* HitReactionMontage;
 
 	/*************************************************************/
-	/*                                      Death                                      */
+	/*                            Death                          */
 	/*************************************************************/
 private:
 	void StartDeath();
@@ -85,4 +90,15 @@ private:
 	UAnimMontage* DeathMontage;
 	UPROPERTY(EditDefaultsOnly, Category = "Death")
 	TSubclassOf<UGameplayEffect> DeathEffect;
+
+	/*************************************************************/
+	/*                             AI                            */
+	/*************************************************************/
+	UPROPERTY(Replicated)
+	FGenericTeamId TeamId;
+
+	virtual void GetLifetimeReplicatedProps(TArray< class FLifetimeProperty >& OutLifetimeProps) const override;
+
+	UPROPERTY()
+	class UAIPerceptionStimuliSourceComponent* AIPerceptionSourceComp;
 };

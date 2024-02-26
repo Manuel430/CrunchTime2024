@@ -28,13 +28,16 @@ private:
 	UFUNCTION()
 	void HandleDamage(FGameplayEventData Payload);
 
+	UFUNCTION()
+	void TryCommitCombo(FGameplayEventData Payload);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TMap<FName, TSubclassOf<class UGameplayEffect>> ComboDamageEffectMap;
 
 	const TSubclassOf<UGameplayEffect> GetDamageEffectForCurrentCombo() const;
 
 	UFUNCTION()
-	void TryCommitCombo(float TimeWaited);
+	void AbilityInputPress(float TimeWaited);
 
 	FName NextComboName;
 	
