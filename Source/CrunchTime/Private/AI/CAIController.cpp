@@ -24,6 +24,7 @@ ACAIController::ACAIController()
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = false;
 
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
+	//AIPerceptionComponent->ConfigureSense(*DamageConfig);
 }
 
 FGenericTeamId ACAIController::GetGenericTeamId() const

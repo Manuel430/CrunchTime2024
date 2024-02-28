@@ -15,4 +15,8 @@ class UGA_AbilityBase : public UGameplayAbility
 	GENERATED_BODY()
 public:
 	UGA_AbilityBase();
+
+protected:
+	void SignalDamageStimuliEvent(FGameplayAbilityTargetDataHandle TargetHandle);
+		
 };
