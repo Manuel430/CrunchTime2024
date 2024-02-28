@@ -15,8 +15,8 @@ void UGA_AbilityBase::SignalDamageStimuliEvent(FGameplayAbilityTargetDataHandle 
 {
 	TArray<AActor*> Targets = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetHandle);
 
-	//for (AActor* Target : Targets)
-	//{
-	//	UAISense_Damage::ReportDamageEvent()
-	//}
+	for (AActor* Target : Targets)
+	{
+		UAISense_Damage::ReportDamageEvent(this, Target, GetOwningActorFromActorInfo(), 1, Target->GetActorLocation(), Target->GetActorLocation());
+	}
 }
