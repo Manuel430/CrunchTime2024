@@ -38,4 +38,9 @@ private:
 
 	UFUNCTION()
 	void TargetPerceptionUpdated(AActor* Target, FAIStimulus Stimulus);
+
+	UFUNCTION()
+	void TargetForgotten(AActor* Target);
+
+	void PawnDeathStatusChanged(bool bIsDead);
 };
