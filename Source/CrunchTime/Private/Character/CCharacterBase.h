@@ -96,8 +96,15 @@ private:
 	TSubclassOf<UGameplayEffect> DeathEffect;
 	
 	/*************************************************************/
-	/*                                          AI                                           */
+	/*                            AI                             */
 	/*************************************************************/
+public:
+	UFUNCTION(NetMulticast, unreliable)
+	void ClientPlayAnimMontage_Implementation(UAnimMontage* MontageToPlay);
+
+	UFUNCTION(NetMulticast, unreliable)
+	void ClientStopAnimMontage_Implementation(UAnimMontage* MontageToStop);
+
 private:
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamId;

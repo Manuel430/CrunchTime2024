@@ -3,13 +3,14 @@
 
 #include "AI/CAIController.h"
 
-#include "Character/CCharacterBase.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "GameplayAbilities/CAbilityGenericTags.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
+
+#include "Character/CCharacterBase.h"
+
+#include "GameplayAbilities/CAbilityGenericTags.h"
 
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
