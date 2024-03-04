@@ -204,14 +204,20 @@ void ACCharacterBase::DeathTagChanged(const FGameplayTag TagChanged, int32 NewSt
 
 void ACCharacterBase::ClientPlayAnimMontage_Implementation(UAnimMontage* MontageToPlay)
 {
-	if(!HasAuthority)
+	if (!HasAuthority())
+	{
 		PlayAnimMontage(MontageToPlay);
+	}
+		
 }
 
 void ACCharacterBase::ClientStopAnimMontage_Implementation(UAnimMontage* MontageToStop)
 {
-	if(!HasAuthority)
+	if (!HasAuthority())
+	{
 		StopAnimMontage(MontageToStop);
+	}
+		
 }
 
 void ACCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

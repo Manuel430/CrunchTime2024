@@ -6,6 +6,12 @@
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "MyBTTask_PlayAnimMontage.generated.h"
 
+struct PlayMontageNodeData
+{
+	UAnimMontage* MontagePlayed;
+	float MontageTimeLeft;
+};
+
 /**
  * 
  */
@@ -14,7 +20,12 @@ class UMyBTTask_PlayAnimMontage : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
+	UMyBTTask_PlayAnimMontage();
+
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds);
+
+	virtual uint16 GetSpecialMemorySize() const override;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* MontageToPlay;

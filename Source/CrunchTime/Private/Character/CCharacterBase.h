@@ -100,10 +100,10 @@ private:
 	/*************************************************************/
 public:
 	UFUNCTION(NetMulticast, unreliable)
-	void ClientPlayAnimMontage_Implementation(UAnimMontage* MontageToPlay);
+	void ClientPlayAnimMontage(UAnimMontage* MontageToPlay);
 
 	UFUNCTION(NetMulticast, unreliable)
-	void ClientStopAnimMontage_Implementation(UAnimMontage* MontageToStop);
+	void ClientStopAnimMontage(UAnimMontage* MontageToStop);
 
 private:
 	UPROPERTY(Replicated)
