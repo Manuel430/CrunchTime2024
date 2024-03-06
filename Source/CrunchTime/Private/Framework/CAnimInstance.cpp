@@ -2,12 +2,17 @@
 
 
 #include "Framework/CAnimInstance.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayAbilities/CAbilityGenericTags.h"
 
 bool UCAnimInstance::ShouldDoUpperBody() const
 {
-	return IsMoving() || IsJumping();
+	return IsMoving() || IsJumping() || !GetIsAiming();
 }
 
 void UCAnimInstance::NativeInitializeAnimation()
@@ -18,6 +23,11 @@ void UCAnimInstance::NativeInitializeAnimation()
 	{
 		OwnerMovemmentComp = OwnerCharacter->GetCharacterMovement();
 		PrevRot = OwnerCharacter->GetActorRotation();
+		UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TryGetPawnOwner());
+		if (OwnerASC)
+		{
+			OwnerASC->RegisterGameplayTagEvent(UCAbilityGenericTags::GetAimingTag()).AddUObject(this, &UCAnimInstance::AimingTagChanged);
+		}
 	}
 
 	if (StartMontage)
@@ -25,6 +35,7 @@ void UCAnimInstance::NativeInitializeAnimation()
 		Montage_Play(StartMontage);
 
 	}
+
 }
 
 void UCAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -45,7 +56,20 @@ void UCAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 
 		YawSpeed = FMath::FInterpTo(YawSpeed, RotDelta.Yaw/DeltaSeconds, DeltaSeconds, 10.f);
 
+		FVector Velocity = OwnerCharacter->GetVelocity();
 
+		FVector LookDir = lookRot.Vector();
+		LookDir.Z = 0;
+		LookDir.Normalize();
+
+		ForwardSpeed = Velocity.Dot(LookDir);
+
+		RightSpeed = Velocity.Dot(LookDir.Cross(FVector::UpVector));
 
 	}
+}
+
+void UCAnimInstance::AimingTagChanged(const FGameplayTag TagChanged, int32 NewStackCount)
+{
+	bIsAiming = NewStackCount != 0;
 }

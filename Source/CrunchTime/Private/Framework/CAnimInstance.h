@@ -40,6 +40,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Animation", meta = (BlueprintThreadSafe))
 	bool ShouldDoUpperBody() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Animation", meta = (BlueprintThreadSafe))
+	bool GetIsAiming() const { return bIsAiming; }
+
+	UFUNCTION(BlueprintCallable, Category = "Animation", meta = (BlueprintThreadSafe))
+	float GetForwardSpeed() const { return ForwardSpeed; }
+
+	UFUNCTION(BlueprintCallable, Category = "Animation", meta = (BlueprintThreadSafe))
+	float GetRightSpeed() const { return RightSpeed; }
+
 private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
@@ -62,4 +72,11 @@ private:
 
 	FRotator PrevRot;
 	float YawSpeed;
+
+	float ForwardSpeed;
+	float RightSpeed;
+
+	bool bIsAiming;
+
+	void AimingTagChanged(const FGameplayTag TagChanged, int32 NewStackCount);
 };
