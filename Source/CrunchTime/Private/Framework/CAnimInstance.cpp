@@ -12,7 +12,7 @@
 
 bool UCAnimInstance::ShouldDoUpperBody() const
 {
-	return IsMoving() || IsJumping() || !GetIsAiming();
+	return IsMoving() || IsJumping() || GetIsAiming();
 }
 
 void UCAnimInstance::NativeInitializeAnimation()
