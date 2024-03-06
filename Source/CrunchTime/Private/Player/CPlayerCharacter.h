@@ -49,7 +49,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* baiscAttackAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* abilityOneInputAction;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void AimingTagChanged(bool bNewIsAiming) override;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& InputValue);
@@ -59,6 +63,8 @@ private:
 
 	UFUNCTION()
 	void DoBasicAttack();
+	UFUNCTION()
+	void TryActivateAbilityOne();
 
 	FVector GetMoveFwdDir() const;
 	FVector GetMoveRightDir() const;
