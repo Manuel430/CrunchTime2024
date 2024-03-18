@@ -19,4 +19,19 @@ class UGA_GroundBlast : public UGA_AbilityBase
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* TargetingMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	TSubclassOf<class ACTargetActor_GroundPick> TargetActorClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetingRadius = 200.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetingRange = 1200.f;
+
+	UFUNCTION()
+	void TargetAquired(const FGameplayAbilityTargetDataHandle& Data);
+
+	UFUNCTION()
+	void TargetCancelled(const FGameplayAbilityTargetDataHandle& Data);
 };

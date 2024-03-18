@@ -54,6 +54,8 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		enhancedInputComp->BindAction(jumpInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::Jump);
 		enhancedInputComp->BindAction(baiscAttackAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::DoBasicAttack);
 		enhancedInputComp->BindAction(abilityOneInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::TryActivateAbilityOne);
+		enhancedInputComp->BindAction(abilityConfirmAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::ConfirmActionTriggered);
+		enhancedInputComp->BindAction(abilityCancelAction , ETriggerEvent::Triggered, this, &ACPlayerCharacter::CancelActionTriggered);
 	}
 }
 
@@ -82,6 +84,18 @@ void ACPlayerCharacter::TryActivateAbilityOne()
 	GetAbilitySystemComponent()->PressInputID((int)EAbilityInputID::AbilityOne);
 }
 
+void ACPlayerCharacter::ConfirmActionTriggered()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Confirmed"));
+	GetAbilitySystemComponent()->InputConfirm();
+}
+
+void ACPlayerCharacter::CancelActionTriggered()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Cancelled"));
+	GetAbilitySystemComponent()->InputCancel();
+}
+
 FVector ACPlayerCharacter::GetMoveFwdDir() const
 {
 	FVector CamerFwd = viewCamera->GetForwardVector();
@@ -94,8 +108,36 @@ FVector ACPlayerCharacter::GetMoveRightDir() const
 	return viewCamera->GetRightVector();
 }
 
+void ACPlayerCharacter::LerpCameraToLocalOffset(const FVector& LocalOffset)
+{
+	GetWorldTimerManager().ClearTimer(CameraLerpHandle);
+	CameraLerpHandle = GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &ACPlayerCharacter::TickCameraLocalOffset, LocalOffset));
+}
+
+void ACPlayerCharacter::TickCameraLocalOffset(FVector Goal)
+{
+	FVector CurrentLocalOffset = viewCamera->GetRelativeLocation();
+	if (FVector::Dist(CurrentLocalOffset, Goal) < 1)
+	{
+		viewCamera->SetRelativeLocation(Goal);
+		return;
+	}
+
+	FVector NewLocalOffset = FMath::Lerp(CurrentLocalOffset, Goal, GetWorld()->GetDeltaSeconds() * AnimCameraLerpingSpeed);
+	viewCamera->SetRelativeLocation(NewLocalOffset);
+	CameraLerpHandle = GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &ACPlayerCharacter::TickCameraLocalOffset, Goal));
+}
+
 void ACPlayerCharacter::AimingTagChanged(bool bNewIsAiming)
 {
 	bUseControllerRotationYaw = bNewIsAiming;
 	GetCharacterMovement()->bOrientRotationToMovement = !bNewIsAiming;
+	if (bNewIsAiming)
+	{
+		LerpCameraToLocalOffset(AnimCameraLocalOffset);
+	}
+	else
+	{
+		LerpCameraToLocalOffset(FVector::ZeroVector);
+	}
 }
