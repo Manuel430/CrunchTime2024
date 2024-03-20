@@ -13,6 +13,11 @@ FGameplayTag UCAbilityGenericTags::GetFullHealthTag()
 	return FGameplayTag::RequestGameplayTag("stat.fullHealth");
 }
 
+FGameplayTag UCAbilityGenericTags::GetFullManaTag()
+{
+	return FGameplayTag::RequestGameplayTag("stat.fullMana");
+}
+
 FGameplayTag UCAbilityGenericTags::GetDeadTag()
 {
 	return FGameplayTag::RequestGameplayTag("stat.dead");
@@ -26,4 +31,9 @@ FGameplayTag UCAbilityGenericTags::GetBasicAttackAcitvationTag()
 FGameplayTag UCAbilityGenericTags::GetAimingTag()
 {
 	return FGameplayTag::RequestGameplayTag("stat.aiming");
+}
+
+FGameplayTag UCAbilityGenericTags::GetStunTag()
+{
+	return FGameplayTag::RequestGameplayTag("stat.stun");
 }
