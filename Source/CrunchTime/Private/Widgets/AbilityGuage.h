@@ -13,6 +13,8 @@ UCLASS()
 class UAbilityGuage : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	//void SetupOwningAbilitySpec(const FGameplayOwningSpec* OwningSpec);
 private:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* IconImage;

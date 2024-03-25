@@ -21,6 +21,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UStatusGuage* StatusGuage;
 
+	UPROPERTY(meta = (BindWidget))
+	class UHorizontalBox* AbilityHBox;
+
 	void HealthUpdated(const FOnAttributeChangeData& ChangeData);
 	void MaxHealthUpdated(const FOnAttributeChangeData& ChangeData);
 
