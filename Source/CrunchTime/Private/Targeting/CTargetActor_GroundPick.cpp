@@ -29,7 +29,7 @@ ACTargetActor_GroundPick::ACTargetActor_GroundPick()
 void ACTargetActor_GroundPick::SetTargettingRadius(float TargettingRadius)
 {
 	TargetSphere->SetSphereRadius(TargettingRadius);
-	TargetDecal->DecalSize = FVector{TargettingRadius};
+	TargetDecal->DecalSize = FVector{ TargettingRadius };
 }
 
 void ACTargetActor_GroundPick::SetTargettingRange(float NewTargettingRange)
@@ -61,11 +61,20 @@ void ACTargetActor_GroundPick::ConfirmTargetingAndContinue()
 	TArray<AActor*> Targets;
 	for (AActor* ActorInRange : CurrentActorsInRange)
 	{
-		if(ActorInRange != PrimaryPC->GetPawn())
+		if (ActorInRange != PrimaryPC->GetPawn())
 			Targets.Add(ActorInRange);
 	}
 
 	FGameplayAbilityTargetDataHandle TargetDataHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(Targets, false);
+
+	FHitResult CenterLocationHitResult;
+	CenterLocationHitResult.ImpactPoint = GetActorLocation();
+
+	//using the new keyword, means that we are allocating memory on the heap, it's dynamic memory, not manager automatically.
+	FGameplayAbilityTargetData_SingleTargetHit* TargetCenterLocationData = new FGameplayAbilityTargetData_SingleTargetHit{ CenterLocationHitResult };
+
+	TargetDataHandle.Add(TargetCenterLocationData);
+
 	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
 }
 
@@ -78,7 +87,7 @@ FHitResult ACTargetActor_GroundPick::GetPlayerView() const
 		FRotator ViewRot;
 
 		PrimaryPC->GetPlayerViewPoint(ViewLoc, ViewRot);
-		
+
 		FVector TraceEnd = ViewLoc + ViewRot.Vector() * TargettingRange;
 
 		GetWorld()->LineTraceSingleByChannel(HitResult, ViewLoc, TraceEnd, ECC_Visibility);
