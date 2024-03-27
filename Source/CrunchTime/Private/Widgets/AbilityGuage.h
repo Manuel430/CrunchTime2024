@@ -7,6 +7,8 @@
 #include "AbilityGuage.generated.h"
 
 struct FGameplayAbilitySpec;
+class UGA_AbilityBase;
+class UGameplayAbility;
 /**
  * 
  */
@@ -15,8 +17,10 @@ class UAbilityGuage : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void SetupOwingAbilitySpec(const FGameplayAbilitySpec* OwningSpec);
+	void SetupOwingAbilityCDO(const class UGA_AbilityBase* OwningAbilityCDO);
+	void SubscribeAbilityCommittedDelegate();
 private:
+	void AbilityCommitted(UGameplayAbility* Ability);
 	UPROPERTY(meta = (BindWidget))
 	class UImage* IconImage;
 	
@@ -34,4 +38,17 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Icon")
 	FName IconTextureMaterialParamName = "Icon";
+
+	const UGA_AbilityBase* AbilityCDO;
+	UMaterialInstanceDynamic* IconMat;
+
+	FTimerHandle CooldownTickTimerHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	float CooldownTickInterval = 1.f / 24.f;
+
+	void TickCooldown();
+	void CooldownFinished();
+
+	float CooldownDuration = 0;
+	float CooldownTimeRemaining = 0;
 };

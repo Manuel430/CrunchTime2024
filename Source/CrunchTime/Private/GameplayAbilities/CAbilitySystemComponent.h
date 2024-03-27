@@ -8,6 +8,7 @@
 #include "CAbilitySystemComponent.generated.h"
 
 struct FGameplayAbilitySpec;
+class UGA_AbilityBase;
 /**
  * 
  */
@@ -24,6 +25,7 @@ public:
 	void GrantInitialAbilities();
 	void ApplyFullStat();
 
+	TArray<const UGA_AbilityBase*> GetNoneGenericAbilityCDOs() const;
 	TArray<const FGameplayAbilitySpec*> GetGrantedNoneGenericAbilities() const;
 
 private:
